@@ -1,0 +1,397 @@
+{
+  "name": "food delivery system",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a professional Food Delivery Assistant for a restaurant name Milli's Resturant.\n\nYour primary responsibilities are:\n\nHelp customers browse the menu.\nAnswer questions using the Get FAQs database sheet.\nTake customer orders accurately.\nCollect and confirm delivery information.\nSave order details in the Post Orders database sheet.\nProvide a friendly and professional customer experience.\n\nORDER PROCESS\n\nWhen a customer wants to place an order:\n\nStep 1: Identify the food items and quantities requested.\n\nStep 2: Confirm the order by listing:\n\nItem names\nQuantities\nIndividual prices (if available)\nTotal amount\n\nStep 3: If any required information is missing, ask for:\n\nFull Name\nMobile Number\nDelivery Address\n\nStep 4: Once all information is collected, summarize the order and ask for confirmation.\n\nExample:\n\nOrder Summary:\n\n1 Chicken Burger\n2 Coca Cola\n\nTotal: Rs. 750\n\nCustomer Name: Ali Khan\nPhone: +92XXXXXXXXXX\nAddress: House 123, Karachi\n\nReply:\n\"Please confirm by replying YES.\"\n\nStep 5: Only after receiving confirmation, prepare structured JSON output.\n\nJSON FORMAT\n\n{\n\"customer_name\": \"\",\n\"phone_number\": \"\",\n\"delivery_address\": \"\",\n\"items\": [\n{\n\"item_name\": \"\",\n\"quantity\": 0,\n\"unit_price\": 0\n}\n],\n\"total_amount\": 0,\n\"order_status\": \"Pending\"\n}\n\nIMPORTANT RULES\n\nNever create an order without customer confirmation.\nNever guess missing customer information.\nAlways ask follow-up questions when information is incomplete.\nBe polite and concise.\nIf a customer asks about menu items, show available menu items from the Inventory database.\nIf a customer asks a common question, answer using the FAQ database.\nIf an item is out of stock, inform the customer and suggest alternatives.\nAlways maintain conversation context throughout the chat.\n\nAfter confirmation, return ONLY the structured JSON so the automation workflow can save the order in the Get Order sheet. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5facea40-cf48-489c-95f3-6bead19ef7b0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        128
+      ],
+      "id": "dcfd3f1a-9e43-4aa1-8bfd-9e079da7be45",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hMPUkRvjtbGr5Jf5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        208
+      ],
+      "id": "57674b2b-92a3-4a4b-b86a-6d308fde89e4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c",
+          "mode": "list",
+          "cachedResultName": "Food Delivery System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        208
+      ],
+      "id": "c92bcd4c-2b0c-4bed-ba57-8f2829118783",
+      "name": "Get Inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ow2WJi5eWjJIYVu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c",
+          "mode": "list",
+          "cachedResultName": "Food Delivery System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 697986416,
+          "mode": "list",
+          "cachedResultName": "FAQ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit#gid=697986416"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        192
+      ],
+      "id": "716a382d-0447-4885-8805-cbb031dfb5cc",
+      "name": "Get FAQs",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ow2WJi5eWjJIYVu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c",
+          "mode": "list",
+          "cachedResultName": "Food Delivery System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 465440459,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b75L1OE9L9_4trkMHxVmAxNE63qx7qlpcL4Pp0whq4c/edit#gid=465440459"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}",
+            "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', ``, 'string') }}",
+            "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', ``, 'string') }}",
+            "Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Address', ``, 'string') }}",
+            "Items": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Items', ``, 'string') }}",
+            "Total Amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Total_Amount', ``, 'string') }}",
+            "Payment Method": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Payment_Method', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+            "output": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('output', ``, 'string') }}",
+            "Order Date": "={{$now.format('yyyy-MM-dd HH:mm:ss')}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Date",
+              "displayName": "Order Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Items",
+              "displayName": "Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Method",
+              "displayName": "Payment Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        160
+      ],
+      "id": "e5991276-ad0b-4a81-9de8-769573bbadd3",
+      "name": "Post Orders",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9ow2WJi5eWjJIYVu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "5e57b9d1-d827-4ba5-9ccc-def549a20ff1",
+      "name": "WhatsApp Trigger",
+      "webhookId": "2d9f7725-8738-478d-a161-22be59183f9f",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "prc4SES8AUNfSOaB",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "recipientPhoneNumber": "4356789",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "72e6db93-5d38-4a1a-a9f3-bd2d16882785",
+      "name": "Send message",
+      "webhookId": "ba5b60d0-af7b-4205-ba5d-7e5d836f4734",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "fac6OfLpwoCMGpJ1",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get FAQs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Orders": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "92b3a00e-9c50-433a-8222-0f87584b6bea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45cfcca183e6c8929d591a5125441d6e9830c8b39ae14ceea377e54e6361f741"
+  },
+  "id": "tAptNH2UxqdSzMgf",
+  "tags": []
+}
